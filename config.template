@@ -1,0 +1,292 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Resources": {
+		"ApiDeployment": {
+		  "Type": "AWS::ApiGateway::Deployment",
+		  "DependsOn": ["subscribefunctionapi", "unsubscribefunctionapi"],
+		  "Properties": {
+			"RestApiId": "subscribeapi",
+			"StageName": "subscribestage"
+		  }
+		},
+		"subscribeapi":{
+			"Type": "AWS::ApiGateway::RestApi",
+		},
+		"SubscribeResource":{
+			"Type": "AWS::ApiGateway::Resource",
+			"Properties": {
+				"RestApiId": {"Ref": "subscribeapi"}
+			}
+		},
+        "subscribefunction": {
+            "Type": "AWS::ApiGateway::Method",
+			"Properties": {
+				"AuthorizationType": "NONE",
+				"HttpMethod": "POST",
+				"Integration": {
+					"Type": "Lambda",
+					"Name":{"Ref":"subscribefunction"}
+				}
+        },
+        "unsubscribefunction": {
+            "Type": "AWS::ApiGateway::Method",
+				"Properties": {
+				"AuthorizationType": "NONE",
+				"HttpMethod": "POST",
+				"Integration": {
+					"Type": "Lambda",
+					"Name":{"Ref":"unsubscribefunction"}
+				}
+        },
+        },
+		
+        "mail": {
+            "Type": "AWS::Lambda::Function",
+			"Runtime": "python2.7",
+			"Properties": {
+            "Code": {
+               "S3Bucket": "sagar-lambda-files",
+               "S3Key": "mail.zip"
+			   }
+            },
+			"Policies":[
+				{
+					"PolicyName":"AmazonAPIGatewayAdministrator",
+					"PolicyDocument":{			
+						"Version": "2012-10-17",
+						"Statement": [
+							{
+								"Effect": "Allow",
+								"Action": [
+									"apigateway:*"
+								],
+								"Resource": "arn:aws:apigateway:*::/*"
+							}
+						]
+					}
+				},
+				{
+					"PolicyName":"LambdaExecutionRole",
+					"PolicyDocument":{			
+						{
+							"Version": "2012-10-17",
+							"Statement": [
+								{
+									"Effect": "Allow",
+									"Action": "logs:CreateLogGroup",
+									"Resource": "arn:aws:logs:ap-south-1:436342194478:*"
+								},
+								{
+									"Effect": "Allow",
+									"Action": [
+										"logs:CreateLogStream",
+										"logs:PutLogEvents"
+									],
+									"Resource": [
+										"arn:aws:logs:ap-south-1:436342194478:log-group:/aws/lambda/subscribefunction:*"
+									]
+								}
+							]
+						}
+					}
+				},
+				{
+					"PolicyName":"SNSPublishRole",
+					"PolicyDocument":{			
+						{
+							"Version": "2012-10-17",
+							"Statement": [
+								{
+									"Action": [
+										"sns:*"
+									],
+									"Effect": "Allow",
+									"Resource": "*"
+								}
+							]
+						}
+					}
+				},
+			]
+        },
+        "subscribefunction": {
+            "Type": "AWS::Lambda::Function",
+			"Runtime": "python2.7",
+			"Properties": {
+            "Code": {
+               "S3Bucket": "sagar-lambda-files",
+               "S3Key": "subscribefunction.zip"
+			   }
+            },
+			"Policies":[
+				{
+					"PolicyName":"AmazonAPIGatewayAdministrator",
+					"PolicyDocument":{			
+						"Version": "2012-10-17",
+						"Statement": [
+							{
+								"Effect": "Allow",
+								"Action": [
+									"apigateway:*"
+								],
+								"Resource": "arn:aws:apigateway:*::/*"
+							}
+						]
+					}
+				},
+				{
+					"PolicyName":"LambdaExecutionRole",
+					"PolicyDocument":{			
+						{
+							"Version": "2012-10-17",
+							"Statement": [
+								{
+									"Effect": "Allow",
+									"Action": "logs:CreateLogGroup",
+									"Resource": "arn:aws:logs:ap-south-1:436342194478:*"
+								},
+								{
+									"Effect": "Allow",
+									"Action": [
+										"logs:CreateLogStream",
+										"logs:PutLogEvents"
+									],
+									"Resource": [
+										"arn:aws:logs:ap-south-1:436342194478:log-group:/aws/lambda/subscribefunction:*"
+									]
+								}
+							]
+						}
+					}
+				},
+				{
+					"PolicyName":"SNSPublishRole",
+					"PolicyDocument":{			
+						{
+							"Version": "2012-10-17",
+							"Statement": [
+								{
+									"Action": [
+										"sns:*"
+									],
+									"Effect": "Allow",
+									"Resource": "*"
+								}
+							]
+						}
+					}
+				},
+			]
+        },
+        "unsubscribefunction": {
+            "Type": "AWS::Lambda::Function",
+			"Runtime": "python2.7",
+			"Properties": {
+            "Code": {
+               "S3Bucket": "sagar-lambda-files",
+               "S3Key": "unsubscribefunction.zip"
+			   }
+            },
+			"Policies":[
+				{
+					"PolicyName":"AmazonAPIGatewayAdministrator",
+					"PolicyDocument":{			
+						"Version": "2012-10-17",
+						"Statement": [
+							{
+								"Effect": "Allow",
+								"Action": [
+									"apigateway:*"
+								],
+								"Resource": "arn:aws:apigateway:*::/*"
+							}
+						]
+					}
+				},
+				{
+					"PolicyName":"LambdaExecutionRole",
+					"PolicyDocument":{			
+						{
+							"Version": "2012-10-17",
+							"Statement": [
+								{
+									"Effect": "Allow",
+									"Action": "logs:CreateLogGroup",
+									"Resource": "arn:aws:logs:ap-south-1:436342194478:*"
+								},
+								{
+									"Effect": "Allow",
+									"Action": [
+										"logs:CreateLogStream",
+										"logs:PutLogEvents"
+									],
+									"Resource": [
+										"arn:aws:logs:ap-south-1:436342194478:log-group:/aws/lambda/subscribefunction:*"
+									]
+								}
+							]
+						}
+					}
+				},
+				{
+					"PolicyName":"SNSPublishRole",
+					"PolicyDocument":{			
+						{
+							"Version": "2012-10-17",
+							"Statement": [
+								{
+									"Action": [
+										"sns:*"
+									],
+									"Effect": "Allow",
+									"Resource": "*"
+								}
+							]
+						}
+					}
+				},
+			]
+        },
+		"TagWatcherRule": {
+		  "Type": "AWS::Events::Rule",
+		  "Properties": {
+			"ScheduleExpression": "cron(0 7 * * ? *)",
+			"Targets": [
+			  {
+				"Id": "TagWatcherScheduler",
+				"Arn": {
+				  "Fn::GetAtt": [
+					"mail",
+					"Arn"
+				  ]
+				}
+			  }
+			]
+		  }
+		},
+		"InvokeLambdaPermission": {
+		  "Type": "AWS::Lambda::Permission",
+		  "Properties": {
+			"FunctionName": {
+			  "Fn::GetAtt": [
+				"mail",
+				"Arn"
+			  ]
+			},
+			"Action": "lambda:mail",
+			"Principal": "events.amazonaws.com",
+			"SourceArn": {
+			  "Fn::GetAtt": [
+				"TagWatcherRule",
+				"Arn"
+			  ]
+			}
+		  }
+		}
+        "subscriptiontopic": {
+            "Type": "AWS::SNS::Subscription",
+			"Properties":{
+				"TopicName" :"subscribe"
+			}
+    }
+}
